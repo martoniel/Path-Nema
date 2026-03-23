@@ -234,7 +234,7 @@ export function getDiseaseImages(diseaseName) {
     // Try jpg first (most common)
     const ext = 'jpg'
     images.push({
-      url:      `/src/assets/diseases/${variant}.${ext}`,
+      url:      `/diseases/${variant}.${ext}`,
       title:    `${diseaseName}${i > 0 ? ` — Image ${i}` : ''}`,
       source:   'Path-Nema Clinical Library',
       isLocal:  true,
