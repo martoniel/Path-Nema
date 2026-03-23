@@ -279,7 +279,7 @@ export default function InfoPage() {
         {/* Footer note */}
         <div className="mt-10 text-center">
           <p className="font-body text-[11px] text-[#4a7a64]">
-            © 2026 Path-Nema Ocular Analytics. All rights reserved.
+            © 2026 PathNema Ocular Analytics. All rights reserved.
           </p>
         </div>
 
