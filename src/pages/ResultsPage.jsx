@@ -1,8 +1,8 @@
 import { useRef, useEffect } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useOcularSearch } from '../hooks/useOcularSearch'
-import DiseaseCard from '../components/DiseaseCard'
-import Chip from '../components/shared/Chip'
+import DiseaseCard from '../components/DiseaseCard'                                        
+import Chip from '../components/Shared/Chip'
 
 // ── Skeleton card while loading ──
 function SkeletonCard() {
