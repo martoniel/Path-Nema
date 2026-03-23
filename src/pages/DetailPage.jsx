@@ -19,7 +19,7 @@ export default function DetailPage() {
   useEffect(() => {
     if (!disease) return
     setVideoLoading(true)
-    fetch(`http://localhost:3001/api/youtube?q=${encodeURIComponent(disease.name + ' eye disease')}`)
+    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/youtube?q=${encodeURIComponent(disease.name + ' eye disease')}`)
       .then(r => r.json())
       .then(data => {
         if (data.videos && data.videos.length > 0) setVideo(data.videos[0])
@@ -39,7 +39,7 @@ export default function DetailPage() {
       setImages(localImages)
       setImagesLoading(false)
     } else {
-      fetch(`${import.meta.env.VITE_API_URL}/api/images?q=${encodeURIComponent(disease.name)}`)
+ fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/images?q=${encodeURIComponent(disease.name)}`)
         .then(r => r.json())
         .then(data => {
           if (data.images && data.images.length > 0) setImages(data.images)
@@ -301,7 +301,7 @@ export default function DetailPage() {
                   <img
                     src={img.url.startsWith('/')
                       ? img.url
-                      : `${import.meta.env.VITE_API_URL}/api/proxy-image?url=${encodeURIComponent(img.url)}`
+                      : `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/proxy-image?url=${encodeURIComponent(img.url)}`
                     }
                     alt={img.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
