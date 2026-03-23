@@ -26,7 +26,7 @@ export default function NavBar() {
     <Link to="/" onClick={close} className="flex items-center gap-2.5">
       <div className="w-8 h-8 rounded-lg bg-[rgba(46,255,192,0.12)] border border-[#1aad82] flex items-center justify-center text-base">👁</div>
       <span className="font-body font-semibold text-white text-[15px]">
-        Path-<span className="text-[#2effc0]">Nema</span>
+        Path<span className="text-[#2effc0]">Nema</span>
       </span>
     </Link>
   )

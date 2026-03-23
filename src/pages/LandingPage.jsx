@@ -103,7 +103,7 @@ export default function LandingPage() {
         Advanced Diagnostic Support
       </h2>
       <p className="font-body text-[#7aad96] text-sm leading-[1.8] mb-6">
-        Path-Nema bridges the gap between complex ocular data and actionable medical insights.
+        PathNema bridges the gap between complex ocular data and actionable medical insights.
         Our proprietary AI models are trained on curated clinical datasets to assist in rapid
         identification of pathologies.
       </p>
