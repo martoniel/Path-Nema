@@ -66,7 +66,14 @@ export default function NavBar() {
                 <p className="text-white text-[13px] font-semibold leading-tight font-body">{user.name}</p>
                 <p className="text-[#7aad96] text-[11px] font-body">{user.role}</p>
               </div>
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1a5c42] to-[#0a2e22] flex items-center justify-center text-sm">👩‍⚕️</div>
+              {user.photo ? (
+  <img src={user.photo} alt={user.name}
+    className="w-8 h-8 rounded-full object-cover border border-[#1aad82]" />
+) : (
+  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1a5c42] to-[#0a2e22] flex items-center justify-center text-sm font-bold text-[#2effc0]">
+    {user.name?.charAt(0).toUpperCase()}
+  </div>
+)}
             </div>
           )}
           <HamburgerBtn />
