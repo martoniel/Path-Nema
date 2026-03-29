@@ -62,10 +62,10 @@ export default function NavBar() {
           </div>
           {loggedIn && user && (
             <div className="flex items-center gap-2.5 pl-3 pr-1 py-1 rounded-full border border-[#1a3328] bg-[#0f2318]">
-              <div className="text-right hidden md:block">
+              <div className="text-right">
                 <p className="text-white text-[13px] font-semibold leading-tight font-body">{user.name}</p>
                 <p className="text-[#7aad96] text-[11px] font-body">{user.role}</p>
-              </div>
+                </div>
               {user.photo ? (
   <img src={user.photo} alt={user.name}
     className="w-8 h-8 rounded-full object-cover border border-[#1aad82]" />
