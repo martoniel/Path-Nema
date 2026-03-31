@@ -392,7 +392,7 @@ export default function LandingPage() {
           {/* Avatar */}
      <img
   src="/Founder.jpg"
-  alt="Martin Obe"
+  alt="The Founder"
   className="w-[120px] h-[120px] rounded-full mx-auto mb-5 object-cover border-2 border-[#1aad82] animate-glow"
 />
           <h2 className="text-white text-[26px] mb-1">Martin Obe</h2>

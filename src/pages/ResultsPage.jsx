@@ -220,7 +220,7 @@ useEffect(() => {
           SYSTEM ACTIVE &nbsp;&nbsp; SECURE END-TO-END ENCRYPTION
         </span>
         <span className="font-body text-[11px] text-[#4a7a64] tracking-wide">
-          HIPAA COMPLIANCE &nbsp;&nbsp; MEDICAL DISCLAIMER &nbsp;&nbsp; © 2024 PATH-NEMA CLINICAL
+          HIPAA COMPLIANCE &nbsp;&nbsp; MEDICAL DISCLAIMER &nbsp;&nbsp; © 2026 PATH-NEMA CLINICAL
         </span>
       </div>
     </div>
