@@ -154,27 +154,27 @@ const CONTENT = {
     title: 'Terms of Service',
     category: 'Legal',
     icon: '📋',
-    intro: 'These Terms of Service govern your use of the Path-Nema platform. By accessing or using Path-Nema, you agree to be bound by these terms.',
+    intro: 'These Terms of Service govern your use of the Path-Nema platform. By accessing or using PathNema, you agree to be bound by these terms.',
     sections: [
       {
         heading: '1. Acceptance of Terms',
-        body: `By registering for or using the Path-Nema platform, you confirm that you are at least 18 years of age, have read and understood these Terms of Service, agree to be bound by these terms and our Privacy Policy, and are using the platform for legitimate educational or clinical decision support purposes. If you are using Path-Nema on behalf of an organisation, you represent that you have authority to bind that organisation to these terms.`,
+        body: `By registering for or using the PathNema platform, you confirm that you are at least 18 years of age, have read and understood these Terms of Service, agree to be bound by these terms and our Privacy Policy, and are using the platform for legitimate educational or clinical decision support purposes. If you are using Path-Nema on behalf of an organisation, you represent that you have authority to bind that organisation to these terms.`,
       },
       {
         heading: '2. Nature of the Service',
-        body: `Path-Nema is an AI-powered clinical decision support tool designed to assist qualified healthcare professionals and students in generating differential diagnoses for ocular pathologies. The platform is intended as an educational and decision support tool only. It does not provide medical diagnoses, replace clinical examination, substitute for professional medical judgment, or constitute a doctor-patient relationship. All clinical decisions must be made by qualified healthcare professionals.`,
+        body: `PathNema is an AI-powered clinical decision support tool designed to assist qualified healthcare professionals and students in generating differential diagnoses for ocular pathologies. The platform is intended as an educational and decision support tool only. It does not provide medical diagnoses, replace clinical examination, substitute for professional medical judgment, or constitute a doctor-patient relationship. All clinical decisions must be made by qualified healthcare professionals.`,
       },
       {
         heading: '3. User Responsibilities',
-        body: `You agree to use Path-Nema only for lawful purposes consistent with these terms, not to enter patient-identifiable information into the platform, not to attempt to reverse-engineer, copy, or redistribute our diagnostic algorithms or knowledge base, not to use the platform in any way that could harm, disable, or impair its operation, to maintain the confidentiality of your account credentials, and to notify us immediately of any unauthorised use of your account.`,
+        body: `You agree to use PathNema only for lawful purposes consistent with these terms, not to enter patient-identifiable information into the platform, not to attempt to reverse-engineer, copy, or redistribute our diagnostic algorithms or knowledge base, not to use the platform in any way that could harm, disable, or impair its operation, to maintain the confidentiality of your account credentials, and to notify us immediately of any unauthorised use of your account.`,
       },
       {
         heading: '4. Intellectual Property',
-        body: `All content, algorithms, knowledge base materials, interface designs, and software comprising the Path-Nema platform are the intellectual property of Path-Nema Ocular Analytics or its licensors. You may not reproduce, distribute, modify, or create derivative works from any Path-Nema content without express written permission. The Khurana's Comprehensive Ophthalmology content referenced within the platform is used under educational fair use provisions and remains the intellectual property of its respective copyright holders.`,
+        body: `All content, algorithms, knowledge base materials, interface designs, and software comprising the Path-Nema platform are the intellectual property of PathNema Ocular Analytics or its licensors. You may not reproduce, distribute, modify, or create derivative works from any Path-Nema content without express written permission. The Khurana's Comprehensive Ophthalmology content referenced within the platform is used under educational fair use provisions and remains the intellectual property of its respective copyright holders.`,
       },
       {
         heading: '5. Limitation of Liability',
-        body: `Path-Nema Ocular Analytics shall not be liable for any clinical decisions made based on platform output, diagnostic errors arising from incomplete or inaccurate symptom descriptions, patient outcomes resulting from reliance on platform suggestions, or any indirect, incidental, or consequential damages arising from platform use. The platform is provided "as is" without warranties of any kind. Maximum liability is limited to the subscription fees paid in the 12 months preceding any claim.`,
+        body: `PathNema Ocular Analytics shall not be liable for any clinical decisions made based on platform output, diagnostic errors arising from incomplete or inaccurate symptom descriptions, patient outcomes resulting from reliance on platform suggestions, or any indirect, incidental, or consequential damages arising from platform use. The platform is provided "as is" without warranties of any kind. Maximum liability is limited to the subscription fees paid in the 12 months preceding any claim.`,
       },
       {
         heading: '6. Termination',
@@ -187,7 +187,7 @@ const CONTENT = {
     title: 'HIPAA Compliance',
     category: 'Legal',
     icon: '🏥',
-    intro: 'Path-Nema is designed and operated with HIPAA compliance principles at its core, ensuring that our platform meets the standards required for use in healthcare settings.',
+    intro: 'PathNema is designed and operated with HIPAA compliance principles at its core, ensuring that our platform meets the standards required for use in healthcare settings.',
     sections: [
       {
         heading: 'Our Commitment to HIPAA',
@@ -195,11 +195,11 @@ const CONTENT = {
       },
       {
         heading: 'De-identification by Design',
-        body: `Path-Nema is specifically designed to operate without requiring the entry of Protected Health Information (PHI). Users are instructed and reminded to enter only de-identified symptom descriptions when using the diagnostic search function. The platform does not request, require, or store patient names, dates of birth, medical record numbers, or any other PHI identifiers. This de-identification by design approach is the most robust HIPAA compliance strategy.`,
+        body: `PathNema is specifically designed to operate without requiring the entry of Protected Health Information (PHI). Users are instructed and reminded to enter only de-identified symptom descriptions when using the diagnostic search function. The platform does not request, require, or store patient names, dates of birth, medical record numbers, or any other PHI identifiers. This de-identification by design approach is the most robust HIPAA compliance strategy.`,
       },
       {
         heading: 'Technical Safeguards',
-        body: `Path-Nema implements the required HIPAA technical safeguards including: access controls (unique user identification, automatic logoff, encryption and decryption), audit controls (hardware, software, and procedural mechanisms to record and examine access), integrity controls (mechanisms to authenticate electronic health information), and transmission security (encryption of data in transit using TLS 1.3 and at rest using AES-256).`,
+        body: `PathNema implements the required HIPAA technical safeguards including: access controls (unique user identification, automatic logoff, encryption and decryption), audit controls (hardware, software, and procedural mechanisms to record and examine access), integrity controls (mechanisms to authenticate electronic health information), and transmission security (encryption of data in transit using TLS 1.3 and at rest using AES-256).`,
       },
       {
         heading: 'Administrative Safeguards',
@@ -207,11 +207,11 @@ const CONTENT = {
       },
       {
         heading: 'Business Associate Agreements',
-        body: `For healthcare organisations wishing to formally integrate Path-Nema into their clinical workflows, we offer Business Associate Agreements (BAAs) as required by HIPAA regulations. A BAA establishes the permitted uses and disclosures of PHI, requires appropriate safeguards, and outlines breach notification procedures. To request a BAA, please contact our compliance team at compliance@pathnema.com.`,
+        body: `For healthcare organisations wishing to formally integrate PathNema into their clinical workflows, we offer Business Associate Agreements (BAAs) as required by HIPAA regulations. A BAA establishes the permitted uses and disclosures of PHI, requires appropriate safeguards, and outlines breach notification procedures. To request a BAA, please contact our compliance team at compliance@pathnema.com.`,
       },
       {
         heading: 'Breach Notification',
-        body: `In the unlikely event of a security breach involving PHI, Path-Nema will comply fully with HIPAA Breach Notification Rule requirements. This includes notifying affected individuals within 60 days of discovery, notifying the Secretary of Health and Human Services, and for breaches affecting more than 500 residents of a state, notifying prominent media outlets in that state. Our incident response team is available 24/7 to respond to security incidents.`,
+        body: `In the unlikely event of a security breach involving PHI, PathNema will comply fully with HIPAA Breach Notification Rule requirements. This includes notifying affected individuals within 60 days of discovery, notifying the Secretary of Health and Human Services, and for breaches affecting more than 500 residents of a state, notifying prominent media outlets in that state. Our incident response team is available 24/7 to respond to security incidents.`,
       },
     ],
   },
