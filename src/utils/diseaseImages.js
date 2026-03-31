@@ -236,7 +236,7 @@ export function getDiseaseImages(diseaseName) {
     images.push({
       url:      `/diseases/${variant}.${ext}`,
       title:    `${diseaseName}${i > 0 ? ` — Image ${i}` : ''}`,
-      source:   'Path-Nema Clinical Library',
+      source:   'PathNema Clinical Library',
       isLocal:  true,
       variant,
     })
