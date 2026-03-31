@@ -66,7 +66,7 @@ export default function Footer() {
             provider with any questions you may have regarding a medical condition.
           </p>
           <p className="font-body text-[12px] text-[#4a7a64] mt-4">
-            © 2026 Path-Nema Ocular Analytics. All rights reserved.
+            © 2026 PathNema Ocular Analytics. All rights reserved.
           </p>
         </div>
       </div>
