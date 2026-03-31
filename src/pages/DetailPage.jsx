@@ -173,7 +173,7 @@ export default function DetailPage() {
       doc.setPage(i)
       doc.setFontSize(8)
       doc.setTextColor(150, 150, 150)
-      doc.text('Path-Nema Clinical Report — For professional use only. Not a substitute for clinical judgment.', lm, 290)
+      doc.text('PathNema Clinical Report — For professional use only. Not a substitute for clinical judgment.', lm, 290)
       doc.text(`Page ${i} of ${pageCount}`, rm - 20, 290)
     }
     doc.save(`PathNema_${disease.name.replace(/\s+/g, '_')}_Report.pdf`)
