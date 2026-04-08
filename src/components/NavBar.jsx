@@ -21,6 +21,7 @@ export default function NavBar() {
 
   const close = () => { setOpen(false); setResourcesOpen(false) }
 
+  // ── Logo ──
   const Logo = () => (
     <Link to="/" onClick={close} className="flex items-center gap-2.5">
       <div className="w-8 h-8 rounded-lg bg-[rgba(46,255,192,0.12)] border border-[#1aad82] flex items-center justify-center text-base">👁</div>
@@ -30,81 +31,54 @@ export default function NavBar() {
     </Link>
   )
 
+  // ── Hamburger button ──
   const HamburgerBtn = () => (
     <button onClick={() => setOpen(!open)}
       className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg border border-[#1a3328] bg-[#0f2318] text-[#7aad96] hover:border-[#1aad82] hover:text-[#2effc0] transition-colors">
-      <Menu size={18} />
+      {open ? <X size={18} /> : <Menu size={18} />}
     </button>
-  )
-
-  // ── Bottom Sheet ──
-  const BottomSheet = ({ children }) => (
-    <>
-      {/* Backdrop */}
-      {open && (
-        <div className="fixed inset-0 z-40 bg-black/60 md:hidden" onClick={close} />
-      )}
-      {/* Sheet */}
-      <div className={`
-        fixed bottom-0 left-0 right-0 z-50 md:hidden
-        bg-[#0d1e1a] border-t border-[#1a3328]
-        rounded-t-3xl px-6 pt-4 pb-8
-        transition-transform duration-300 ease-out
-        ${open ? 'translate-y-0' : 'translate-y-full'}
-      `}>
-        {/* Handle bar */}
-        <div className="w-10 h-1 rounded-full bg-[#1a3328] mx-auto mb-5" />
-        {/* Close button */}
-        <button onClick={close}
-          className="absolute top-4 right-5 w-8 h-8 flex items-center justify-center rounded-full bg-[#1a3328] text-[#7aad96] hover:text-[#2effc0] transition-colors">
-          <X size={15} />
-        </button>
-        {children}
-      </div>
-    </>
   )
 
   // ── Results page nav ──
   if (path.startsWith('/results')) {
     const navLinks = ['Home', 'Diagnosis', 'History', 'Settings']
     return (
-      <>
-        <nav className="fixed top-0 left-0 right-0 z-50 h-[60px] flex items-center justify-between px-4 md:px-10 bg-[#0a1a14]/90 backdrop-blur-md border-b border-[#1a3328]">
-          <Logo />
-          <div className="hidden md:flex items-center gap-6">
-            {navLinks.map(l => (
-              <button key={l} className={`font-body text-sm font-medium transition-colors duration-200 ${l === 'Diagnosis' ? 'text-[#2effc0] border-b border-[#2effc0] pb-0.5' : 'text-[#7aad96] hover:text-[#e8f5f0]'}`}>{l}</button>
-            ))}
+      <nav className="fixed top-0 left-0 right-0 z-50 h-[60px] flex items-center justify-between px-4 md:px-10 bg-[#0a1a14]/90 backdrop-blur-md border-b border-[#1a3328]">
+        <Logo />
+        <div className="hidden md:flex items-center gap-6">
+          {navLinks.map(l => (
+            <button key={l}
+              className={`font-body text-sm font-medium transition-colors duration-200
+                ${l === 'Diagnosis' ? 'text-[#2effc0] border-b border-[#2effc0] pb-0.5' : 'text-[#7aad96] hover:text-[#e8f5f0]'}`}>
+              {l}
+            </button>
+          ))}
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="relative hidden md:block">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4a7a64] text-sm">🔍</span>
+            <input className="bg-[#0f2318] border border-[#1a3328] rounded-lg pl-9 pr-3 py-2 text-sm text-[#e8f5f0] placeholder-[#4a7a64] outline-none focus:border-[#1aad82] w-48 font-body"
+              placeholder="Search records..." />
           </div>
-          <div className="flex items-center gap-3">
-            <div className="relative hidden md:block">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4a7a64] text-sm">🔍</span>
-              <input className="bg-[#0f2318] border border-[#1a3328] rounded-lg pl-9 pr-3 py-2 text-sm text-[#e8f5f0] placeholder-[#4a7a64] outline-none focus:border-[#1aad82] w-48 font-body" placeholder="Search records..." />
-            </div>
-            {loggedIn && user && (
-              <div className="flex items-center gap-2.5 pl-3 pr-1 py-1 rounded-full border border-[#1a3328] bg-[#0f2318]">
-                <div className="text-right">
-                  <p className="text-white text-[13px] font-semibold leading-tight font-body">{user.name}</p>
-                  <p className="text-[#7aad96] text-[11px] font-body">{user.role}</p>
+          {loggedIn && user && (
+            <div className="flex items-center gap-2.5 pl-3 pr-1 py-1 rounded-full border border-[#1a3328] bg-[#0f2318]">
+              <div className="text-right">
+                <p className="text-white text-[13px] font-semibold leading-tight font-body">{user.name}</p>
+                <p className="text-[#7aad96] text-[11px] font-body">{user.role}</p>
                 </div>
-                {user.photo
-                  ? <img src={user.photo} alt={user.name} className="w-8 h-8 rounded-full object-cover border border-[#1aad82]" />
-                  : <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1a5c42] to-[#0a2e22] flex items-center justify-center text-sm font-bold text-[#2effc0]">{user.name?.charAt(0).toUpperCase()}</div>
-                }
-              </div>
-            )}
-            <HamburgerBtn />
-          </div>
-        </nav>
-        <BottomSheet>
-          <div className="space-y-1">
-            {navLinks.map(l => (
-              <button key={l} className="w-full text-left px-4 py-3.5 rounded-xl font-body text-[14px] font-medium text-[#7aad96] hover:bg-[#0f2318] hover:text-[#2effc0] transition-colors">{l}</button>
-            ))}
-            {loggedIn && <button onClick={() => { logout(); close() }} className="w-full text-left px-4 py-3.5 rounded-xl font-body text-[14px] font-medium text-[#e05050] hover:bg-[rgba(224,80,80,0.08)] transition-colors">Logout</button>}
-          </div>
-        </BottomSheet>
-      </>
+              {user.photo ? (
+  <img src={user.photo} alt={user.name}
+    className="w-8 h-8 rounded-full object-cover border border-[#1aad82]" />
+) : (
+  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1a5c42] to-[#0a2e22] flex items-center justify-center text-sm font-bold text-[#2effc0]">
+    {user.name?.charAt(0).toUpperCase()}
+  </div>
+)}
+            </div>
+          )}
+          <HamburgerBtn />
+        </div>
+      </nav>
     )
   }
 
@@ -114,9 +88,12 @@ export default function NavBar() {
       <>
         <nav className="fixed top-0 left-0 right-0 z-50 h-[60px] flex items-center justify-between px-4 md:px-10 bg-[#0a1a14]/90 backdrop-blur-md border-b border-[#1a3328]">
           <Logo />
+
+          {/* Desktop right side */}
           <div className="hidden md:flex items-center gap-2">
             {loggedIn ? (
               <>
+                {/* Resources dropdown desktop */}
                 <div className="relative">
                   <button onClick={() => setResourcesOpen(!resourcesOpen)}
                     className="flex items-center gap-1 px-4 py-2 rounded-lg border border-[#1a3328] text-[#7aad96] text-sm font-medium font-body hover:border-[#1aad82] hover:text-[#2effc0] transition-colors">
@@ -133,51 +110,84 @@ export default function NavBar() {
                     </div>
                   )}
                 </div>
-                <button onClick={() => navigate('/results')} className="px-4 py-2 rounded-lg border border-[#1a3328] text-[#7aad96] text-sm font-medium font-body hover:border-[#1aad82] hover:text-[#2effc0] transition-colors">History</button>
-                <button onClick={logout} className="px-4 py-2 rounded-lg border border-[#1a3328] text-[#7aad96] text-sm font-medium font-body hover:border-[#1aad82] hover:text-[#2effc0] transition-colors">Logout</button>
+                <button onClick={() => navigate('/results')}
+                  className="px-4 py-2 rounded-lg border border-[#1a3328] text-[#7aad96] text-sm font-medium font-body hover:border-[#1aad82] hover:text-[#2effc0] transition-colors">
+                  History
+                </button>
+                <button onClick={logout}
+                  className="px-4 py-2 rounded-lg border border-[#1a3328] text-[#7aad96] text-sm font-medium font-body hover:border-[#1aad82] hover:text-[#2effc0] transition-colors">
+                  Logout
+                </button>
               </>
             ) : (
               <>
-                <Link to="/auth?tab=login" className="px-4 py-2 rounded-lg border border-[#1a3328] text-[#7aad96] text-sm font-medium font-body hover:border-[#1aad82] hover:text-[#2effc0] transition-colors">Login</Link>
-                <Link to="/auth?tab=signup" className="px-5 py-2 rounded-lg bg-[#2effc0] text-[#071210] text-sm font-bold font-body hover:opacity-85 transition-opacity">Sign up</Link>
+                <Link to="/auth?tab=login"
+                  className="px-4 py-2 rounded-lg border border-[#1a3328] text-[#7aad96] text-sm font-medium font-body hover:border-[#1aad82] hover:text-[#2effc0] transition-colors">
+                  Login
+                </Link>
+                <Link to="/auth?tab=signup"
+                  className="px-5 py-2 rounded-lg bg-[#2effc0] text-[#071210] text-sm font-bold font-body hover:opacity-85 transition-opacity">
+                  Sign up
+                </Link>
               </>
             )}
           </div>
+
+          {/* Mobile hamburger */}
           <HamburgerBtn />
         </nav>
-        <BottomSheet>
-          {loggedIn ? (
-            <div className="space-y-1">
-              <div>
-                <button onClick={() => setResourcesOpen(!resourcesOpen)}
-                  className="w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-body text-[14px] font-medium text-[#7aad96] hover:bg-[#0f2318] hover:text-[#2effc0] transition-colors">
-                  Resources {resourcesOpen ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+
+        {/* Mobile dropdown — detail page */}
+        {open && (
+          <div className="fixed top-[60px] left-0 right-0 z-40 bg-[#0a1a14]/98 backdrop-blur-md border-b border-[#1a3328] px-6 py-5 flex flex-col gap-3 md:hidden">
+            {loggedIn ? (
+              <>
+                {/* Resources with sub-items */}
+                <div>
+                  <button onClick={() => setResourcesOpen(!resourcesOpen)}
+                    className="w-full flex items-center justify-between font-body text-sm font-medium text-[#7aad96] hover:text-[#2effc0] transition-colors py-2.5 border-b border-[#1a3328]">
+                    Resources
+                    {resourcesOpen ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+                  </button>
+                  {resourcesOpen && (
+                    <div className="mt-2 pl-3 flex flex-col gap-1">
+                      {RESOURCES.map(r => (
+                        <Link key={r.slug} to={`/resources/${r.slug}`} onClick={close}
+                          className="block font-body text-[13px] text-[#4a7a64] hover:text-[#2effc0] py-2 transition-colors">
+                          → {r.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <button onClick={() => { navigate('/results'); close() }}
+                  className="text-left font-body text-sm font-medium text-[#7aad96] hover:text-[#2effc0] transition-colors py-2.5 border-b border-[#1a3328]">
+                  History
                 </button>
-                {resourcesOpen && (
-                  <div className="pl-4 pb-2">
-                    {RESOURCES.map(r => (
-                      <Link key={r.slug} to={`/resources/${r.slug}`} onClick={close}
-                        className="block px-4 py-2.5 rounded-lg font-body text-[13px] text-[#4a7a64] hover:text-[#2effc0] transition-colors">
-                        → {r.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <button onClick={() => { navigate('/results'); close() }} className="w-full text-left px-4 py-3.5 rounded-xl font-body text-[14px] font-medium text-[#7aad96] hover:bg-[#0f2318] hover:text-[#2effc0] transition-colors">History</button>
-              <button onClick={() => { navigate('/results'); close() }} className="w-full text-left px-4 py-3.5 rounded-xl font-body text-[14px] font-medium text-[#7aad96] hover:bg-[#0f2318] hover:text-[#2effc0] transition-colors">Settings</button>
-              <div className="pt-2 border-t border-[#1a3328]">
-                <button onClick={() => { logout(); close() }} className="w-full text-left px-4 py-3.5 rounded-xl font-body text-[14px] font-medium text-[#e05050] hover:bg-[rgba(224,80,80,0.08)] transition-colors">Logout</button>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <p className="font-body text-[11px] text-[#4a7a64] uppercase tracking-widest font-bold px-1 mb-2">Get full access</p>
-              <Link to="/auth?tab=login" onClick={close} className="w-full py-3.5 rounded-xl border border-[#1a3328] text-[#7aad96] font-medium text-sm font-body text-center block hover:border-[#1aad82] hover:text-[#2effc0] transition-colors">Login</Link>
-              <Link to="/auth?tab=signup" onClick={close} className="w-full py-3.5 rounded-xl bg-[#2effc0] text-[#071210] font-bold text-sm font-body text-center block">Sign up — It's Free</Link>
-            </div>
-          )}
-        </BottomSheet>
+                <button onClick={() => { navigate('/results'); close() }}
+                  className="text-left font-body text-sm font-medium text-[#7aad96] hover:text-[#2effc0] transition-colors py-2.5 border-b border-[#1a3328]">
+                  Settings
+                </button>
+                <button onClick={() => { logout(); close() }}
+                  className="w-full py-3 rounded-xl border border-[#1a3328] text-[#7aad96] font-medium text-sm font-body mt-1">
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="font-body text-[11px] text-[#4a7a64] uppercase tracking-widest font-bold">Get full access</p>
+                <Link to="/auth?tab=login" onClick={close}
+                  className="w-full py-3 rounded-xl border border-[#1a3328] text-[#7aad96] font-medium text-sm font-body text-center block">
+                  Login
+                </Link>
+                <Link to="/auth?tab=signup" onClick={close}
+                  className="w-full py-3 rounded-xl bg-[#2effc0] text-[#071210] font-bold text-sm font-body text-center block">
+                  Sign up — It's Free
+                </Link>
+              </>
+            )}
+          </div>
+        )}
       </>
     )
   }
@@ -187,42 +197,74 @@ export default function NavBar() {
     <>
       <nav className="fixed top-0 left-0 right-0 z-50 h-[60px] flex items-center justify-between px-4 md:px-10 bg-[#0a1a14]/85 backdrop-blur-md border-b border-[#1a3328]">
         <Logo />
+
+        {/* Desktop links */}
         <div className="hidden md:flex items-center gap-2">
           <button className="px-4 py-1.5 text-sm font-medium text-[#7aad96] hover:text-[#e8f5f0] transition-all font-body">Resources</button>
           <button className="px-4 py-1.5 text-sm font-medium text-[#7aad96] hover:text-[#e8f5f0] transition-all font-body">Pricing</button>
           {loggedIn ? (
             <>
-              <button onClick={() => navigate('/results')} className="px-5 py-2 rounded-lg bg-[#2effc0] text-[#071210] text-sm font-bold font-body hover:opacity-85 transition-opacity">Dashboard</button>
-              <button onClick={logout} className="px-4 py-2 rounded-lg border border-[#1a3328] text-[#7aad96] text-sm font-medium font-body hover:border-[#1aad82] hover:text-[#2effc0] transition-colors">Logout</button>
+              <button onClick={() => navigate('/results')}
+                className="px-5 py-2 rounded-lg bg-[#2effc0] text-[#071210] text-sm font-bold font-body hover:opacity-85 transition-opacity">
+                Dashboard
+              </button>
+              <button onClick={logout}
+                className="px-4 py-2 rounded-lg border border-[#1a3328] text-[#7aad96] text-sm font-medium font-body hover:border-[#1aad82] hover:text-[#2effc0] transition-colors">
+                Logout
+              </button>
             </>
           ) : (
             <>
-              <Link to="/auth?tab=login" className="px-4 py-2 rounded-lg border border-[#1a3328] text-[#7aad96] text-sm font-medium font-body hover:border-[#1aad82] hover:text-[#2effc0] transition-colors">Login</Link>
-              <Link to="/auth?tab=signup" className="px-5 py-2 rounded-lg bg-[#2effc0] text-[#071210] text-sm font-bold font-body hover:opacity-85 transition-opacity">Sign up</Link>
+              <Link to="/auth?tab=login"
+                className="px-4 py-2 rounded-lg border border-[#1a3328] text-[#7aad96] text-sm font-medium font-body hover:border-[#1aad82] hover:text-[#2effc0] transition-colors">
+                Login
+              </Link>
+              <Link to="/auth?tab=signup"
+                className="px-5 py-2 rounded-lg bg-[#2effc0] text-[#071210] text-sm font-bold font-body hover:opacity-85 transition-opacity">
+                Sign up
+              </Link>
             </>
           )}
         </div>
+
+        {/* Mobile hamburger */}
         <HamburgerBtn />
       </nav>
-      <BottomSheet>
-        <div className="space-y-1">
-          <button className="w-full text-left px-4 py-3.5 rounded-xl font-body text-[14px] font-medium text-[#7aad96] hover:bg-[#0f2318] hover:text-[#2effc0] transition-colors">Resources</button>
-          <button className="w-full text-left px-4 py-3.5 rounded-xl font-body text-[14px] font-medium text-[#7aad96] hover:bg-[#0f2318] hover:text-[#2effc0] transition-colors">Pricing</button>
+
+      {/* Mobile dropdown — landing */}
+      {open && (
+        <div className="fixed top-[60px] left-0 right-0 z-40 bg-[#0a1a14]/98 backdrop-blur-md border-b border-[#1a3328] px-6 py-5 flex flex-col gap-3 md:hidden">
+          <button className="text-left font-body text-sm font-medium text-[#7aad96] hover:text-[#2effc0] transition-colors py-2.5 border-b border-[#1a3328]">
+            Resources
+          </button>
+          <button className="text-left font-body text-sm font-medium text-[#7aad96] hover:text-[#2effc0] transition-colors py-2.5 border-b border-[#1a3328]">
+            Pricing
+          </button>
           {loggedIn ? (
             <>
-              <div className="pt-2 border-t border-[#1a3328]">
-                <button onClick={() => { navigate('/results'); close() }} className="w-full py-3.5 rounded-xl bg-[#2effc0] text-[#071210] font-bold text-sm font-body">Dashboard</button>
-              </div>
-              <button onClick={() => { logout(); close() }} className="w-full text-left px-4 py-3.5 rounded-xl font-body text-[14px] font-medium text-[#e05050] hover:bg-[rgba(224,80,80,0.08)] transition-colors">Logout</button>
+              <button onClick={() => { navigate('/results'); close() }}
+                className="w-full py-3 rounded-xl bg-[#2effc0] text-[#071210] font-bold text-sm font-body mt-1">
+                Dashboard
+              </button>
+              <button onClick={() => { logout(); close() }}
+                className="w-full py-3 rounded-xl border border-[#1a3328] text-[#7aad96] font-medium text-sm font-body">
+                Logout
+              </button>
             </>
           ) : (
-            <div className="pt-2 border-t border-[#1a3328] space-y-3">
-              <Link to="/auth?tab=login" onClick={close} className="w-full py-3.5 rounded-xl border border-[#1a3328] text-[#7aad96] font-medium text-sm font-body text-center block hover:border-[#1aad82] hover:text-[#2effc0] transition-colors">Login</Link>
-              <Link to="/auth?tab=signup" onClick={close} className="w-full py-3.5 rounded-xl bg-[#2effc0] text-[#071210] font-bold text-sm font-body text-center block">Sign up</Link>
-            </div>
+            <>
+              <Link to="/auth?tab=login" onClick={close}
+                className="w-full py-3 rounded-xl border border-[#1a3328] text-[#7aad96] font-medium text-sm font-body text-center block mt-1">
+                Login
+              </Link>
+              <Link to="/auth?tab=signup" onClick={close}
+                className="w-full py-3 rounded-xl bg-[#2effc0] text-[#071210] font-bold text-sm font-body text-center block">
+                Sign up
+              </Link>
+            </>
           )}
         </div>
-      </BottomSheet>
+      )}
     </>
   )
 }
