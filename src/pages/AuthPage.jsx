@@ -175,7 +175,7 @@ export default function AuthPage() {
                   <img key={i} src={src} alt="" className="w-8 h-8 rounded-full border-2 border-[#0a1a14] -mr-2 object-cover" />
                 ))}
               </div>
-              <span className="font-body text-[12px] text-[#7aad96] ml-3">10,000+ professionals</span>
+              <span className="font-body text-[12px] text-[#7aad96] ml-3">100+ professionals</span>
             </div>
           </div>
         </div>
