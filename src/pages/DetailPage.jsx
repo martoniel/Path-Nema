@@ -22,6 +22,10 @@ export default function DetailPage() {
   const [lightbox,      setLightbox]      = useState(null)
   const [ddxLoading, setDdxLoading] = useState(null)
 
+  useEffect(() => {
+  setActiveTab('overview')
+}, [disease?.id])
+
 const handleDDxClick = async (diseaseName) => {
   setDdxLoading(diseaseName)
   try {
