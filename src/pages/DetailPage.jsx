@@ -20,6 +20,27 @@ export default function DetailPage() {
   const [imagesLoading, setImagesLoading] = useState(true)
   const [activeTab,     setActiveTab]     = useState('overview')
   const [lightbox,      setLightbox]      = useState(null)
+  const [ddxLoading, setDdxLoading] = useState(null)
+
+const handleDDxClick = async (diseaseName) => {
+  setDdxLoading(diseaseName)
+  try {
+    const res  = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/search`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ query: diseaseName }),
+    })
+    const data = await res.json()
+    const topDisease = data.diseases?.[0]
+    if (topDisease) {
+      navigate(`/disease/${topDisease.id}`, { state: { disease: topDisease } })
+    }
+  } catch (err) {
+    console.error('DDx fetch error:', err)
+  } finally {
+    setDdxLoading(null)
+  }
+}
 
   useEffect(() => {
     if (!disease) return
@@ -378,13 +399,17 @@ export default function DetailPage() {
                 <Section title="Differential Diagnosis">
                   <div className="space-y-3 mt-4">
                     {(disease.differentialDiagnosis || []).map((d, i) => (
-                      <div key={i} className="bg-[#0f2318] border border-[#1a3328] rounded-xl p-4 flex items-start gap-4">
-                        <div className="flex-1">
-                          <p className="font-body font-bold text-[14px] text-[#e8f5f0] mb-1">{d.name}</p>
-                          <p className="font-body text-[12px] text-[#7aad96]">{d.distinguishingFeature}</p>
+                     <div key={i} className="bg-[#0f2318] border border-[#1a3328] rounded-xl p-4 flex items-start gap-4 cursor-pointer hover:border-[#1aad82] transition-all duration-200 group"
+                        onClick={() => handleDDxClick(d.name)}>
+                         <div className="flex-1">
+                         <p className="font-body font-bold text-[14px] text-[#e8f5f0] mb-1 group-hover:text-[#2effc0] transition-colors">{d.name}</p>
+                         <p className="font-body text-[12px] text-[#7aad96]">{d.distinguishingFeature}</p>
                         </div>
-                        <span className="text-[#4a7a64] text-xs font-body font-semibold px-2 py-1 border border-[#1a3328] rounded-lg">DDx</span>
-                      </div>
+  {ddxLoading === d.name
+    ? <span className="text-[#2effc0] text-xs font-body font-semibold px-2 py-1 border border-[#1aad82] rounded-lg animate-pulse">...</span>
+    : <span className="text-[#4a7a64] text-xs font-body font-semibold px-2 py-1 border border-[#1a3328] rounded-lg group-hover:border-[#1aad82] group-hover:text-[#2effc0] transition-colors">DDx</span>
+  }
+</div>
                     ))}
                   </div>
                 </Section>
