@@ -37,7 +37,7 @@ export default function ResultsPage() {
  // Auto-search when query changes — cache results in sessionStorage
 useEffect(() => {
   if (!query) return
-  const cacheKey = `pathnema_results_${query}`
+  const cacheKey = `Results_for_${query}`
   const cached = sessionStorage.getItem(cacheKey)
   if (cached) {
     // Restore cached results
@@ -51,7 +51,7 @@ useEffect(() => {
 // Cache results when they arrive
 useEffect(() => {
   if (results && query) {
-    const cacheKey = `pathnema_results_${query}`
+    const cacheKey = `result_for_${query}`
     sessionStorage.setItem(cacheKey, JSON.stringify(results))
   }
 }, [results])

@@ -3,7 +3,7 @@ import {
   Eye, EyeOff, Microscope, Activity, AlertTriangle,
   Zap, Shield, Heart, Brain, FlaskConical, Stethoscope,
   Sun, Droplets, Wind, Crosshair, Layers, ScanEye,
-  CircleDot, Wave, Flame, Syringe
+  CircleDot, Flame, Syringe
 } from 'lucide-react'
 
 /**

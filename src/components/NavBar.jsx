@@ -46,11 +46,11 @@ export default function NavBar() {
       <nav className="fixed top-0 left-0 right-0 z-50 h-[60px] flex items-center justify-between px-4 md:px-10 bg-[#0a1a14]/90 backdrop-blur-md border-b border-[#1a3328]">
         <Logo />
         <div className="hidden md:flex items-center gap-6">
-          {navLinks.map(l => (
-            <button key={l}
+          {navLinks.map(I => (
+            <button key={I}
               className={`font-body text-sm font-medium transition-colors duration-200
-                ${l === 'Diagnosis' ? 'text-[#2effc0] border-b border-[#2effc0] pb-0.5' : 'text-[#7aad96] hover:text-[#e8f5f0]'}`}>
-              {l}
+                ${I === 'Diagnosis' ? 'text-[#2effc0] border-b border-[#2effc0] pb-0.5' : 'text-[#7aad96] hover:text-[#e8f5f0]'}`}>
+              {I}
             </button>
           ))}
         </div>

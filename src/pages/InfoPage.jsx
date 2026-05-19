@@ -264,8 +264,8 @@ export default function InfoPage() {
 
         {/* Sections */}
         <div className="space-y-8">
-          {content.sections.map((section, i) => (
-            <div key={i} className="bg-[#0f2318] border border-[#1a3328] rounded-2xl p-7">
+          {content.sections.map((section, k) => (
+            <div key={k} className="bg-[#0f2318] border border-[#1a3328] rounded-2xl p-7">
               <h2 className="font-body font-bold text-[17px] text-[#e8f5f0] mb-4 pb-3 border-b border-[#1a3328]">
                 {section.heading}
               </h2>

@@ -48,6 +48,7 @@ export function AppProvider({ children }) {
         </div>
       </div>
     )
+    
   }
 
   return (

@@ -9,7 +9,7 @@ export default function SearchBar({ onGate }) {
   const navigate = useNavigate()
 
   const handleSubmit = () => {
-    if (!query.trim()) return
+    if (!query.trim()) return 
 
     if (!loggedIn && searchCount >= 2) {
       onGate?.()
