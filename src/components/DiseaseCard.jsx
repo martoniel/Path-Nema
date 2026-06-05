@@ -10,7 +10,7 @@ import {
  * Maps disease name keywords → Lucide icon component.
  * Covers common ophthalmic conditions; falls back to <Eye />.
  */
-function getDiseaseIcon(name = '') {
+export function getDiseaseIcon(name = '') {
   const n = name.toLowerCase()
 
   if (n.includes('glaucom'))                          return ScanEye

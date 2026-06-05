@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useEffect, useState }      from 'react'
+import { addDiseaseToHistory }      from './DashboardPage'
 import jsPDF                        from 'jspdf'
 import { getDiseaseImages }         from '../utils/diseaseImages'
 import {
@@ -25,6 +26,10 @@ export default function DetailPage() {
   useEffect(() => {
   setActiveTab('overview')
 }, [disease?.id])
+
+  useEffect(() => {
+    if (disease) addDiseaseToHistory(disease)
+  }, [disease?.id])
 
 const handleDDxClick = async (diseaseName) => {
   setDdxLoading(diseaseName)

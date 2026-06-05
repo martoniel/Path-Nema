@@ -1,22 +1,22 @@
-import { useState } from 'react'
+Aimport { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import { Menu, X, ChevronDown, ChevronUp } from 'lucide-react'
 
 const RESOURCES = [
   { label: 'Clinical Case Studies', slug: 'clinical-case-studies' },
-  { label: 'Academic Papers',       slug: 'academic-papers'       },
-  { label: 'Learning Modules',      slug: 'learning-modules'      },
-  { label: 'API Documentation',     slug: 'api-documentation'     },
+  { label: 'Academic Papers', slug: 'academic-papers' },
+  { label: 'Learning Modules', slug: 'learning-modules' },
+  { label: 'API Documentation', slug: 'api-documentation' },
 ]
 
 export default function NavBar() {
   const { loggedIn, user, logout } = useApp()
   const location = useLocation()
-  const navigate  = useNavigate()
-  const path      = location.pathname
+  const navigate = useNavigate()
+  const path = location.pathname
 
-  const [open,          setOpen]          = useState(false)
+  const [open, setOpen] = useState(false)
   const [resourcesOpen, setResourcesOpen] = useState(false)
 
   const close = () => { setOpen(false); setResourcesOpen(false) }
@@ -65,15 +65,15 @@ export default function NavBar() {
               <div className="text-right">
                 <p className="text-white text-[13px] font-semibold leading-tight font-body">{user.name}</p>
                 <p className="text-[#7aad96] text-[11px] font-body">{user.role}</p>
-                </div>
+              </div>
               {user.photo ? (
-  <img src={user.photo} alt={user.name}
-    className="w-8 h-8 rounded-full object-cover border border-[#1aad82]" />
-) : (
-  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1a5c42] to-[#0a2e22] flex items-center justify-center text-sm font-bold text-[#2effc0]">
-    {user.name?.charAt(0).toUpperCase()}
-  </div>
-)}
+                <img src={user.photo} alt={user.name}
+                  className="w-8 h-8 rounded-full object-cover border border-[#1aad82]" />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1a5c42] to-[#0a2e22] flex items-center justify-center text-sm font-bold text-[#2effc0]">
+                  {user.name?.charAt(0).toUpperCase()}
+                </div>
+              )}
             </div>
           )}
           <HamburgerBtn />
@@ -204,7 +204,7 @@ export default function NavBar() {
           <button className="px-4 py-1.5 text-sm font-medium text-[#7aad96] hover:text-[#e8f5f0] transition-all font-body">Pricing</button>
           {loggedIn ? (
             <>
-              <button onClick={() => navigate('/results')}
+              <button onClick={() => navigate('/dashboard')}
                 className="px-5 py-2 rounded-lg bg-[#2effc0] text-[#071210] text-sm font-bold font-body hover:opacity-85 transition-opacity">
                 Dashboard
               </button>
@@ -242,7 +242,7 @@ export default function NavBar() {
           </button>
           {loggedIn ? (
             <>
-              <button onClick={() => { navigate('/results'); close() }}
+              <button onClick={() => { navigate('/dashboard'); close() }}
                 className="w-full py-3 rounded-xl bg-[#2effc0] text-[#071210] font-bold text-sm font-body mt-1">
                 Dashboard
               </button>

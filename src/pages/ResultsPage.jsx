@@ -37,12 +37,10 @@ export default function ResultsPage() {
  // Auto-search when query changes — cache results in sessionStorage
 useEffect(() => {
   if (!query) return
-  const cacheKey = `Results_for_${query}`
+  const cacheKey = `result_for_${query}`
   const cached = sessionStorage.getItem(cacheKey)
   if (cached) {
-    // Restore cached results
-    const parsed = JSON.parse(cached)
-    search(query, parsed)
+    search(query, JSON.parse(cached))
   } else {
     search(query)
   }
@@ -51,8 +49,7 @@ useEffect(() => {
 // Cache results when they arrive
 useEffect(() => {
   if (results && query) {
-    const cacheKey = `result_for_${query}`
-    sessionStorage.setItem(cacheKey, JSON.stringify(results))
+    sessionStorage.setItem(`result_for_${query}`, JSON.stringify(results))
   }
 }, [results])
 

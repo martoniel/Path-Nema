@@ -44,7 +44,7 @@ export function AppProvider({ children }) {
       <div className="min-h-screen bg-[#0a1a14] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-10 h-10 rounded-full border-2 border-[#2effc0] border-t-transparent animate-spin" />
-          <p className="font-body text-[#4a7a64] text-sm">Loading PathNema...</p>
+          <p className="font-body text-[#4a7a64] text-sm">Welcome to PathNema...</p>
         </div>
       </div>
     )
