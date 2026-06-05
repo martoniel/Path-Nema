@@ -1,4 +1,4 @@
-Aimport { useState } from 'react'
+import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
 import { Menu, X, ChevronDown, ChevronUp } from 'lucide-react'
