@@ -102,7 +102,7 @@ Respond ONLY with valid JSON — no prose, no markdown, no code fences:
 - Draw primarily from the Khurana reference material provided`
 
     const completion = await groq.chat.completions.create({
-      model:       'meta-llama/llama-4-scout-17b-16e-instruct',
+      model:       'openai/gpt-oss-120b',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user',   content: `Patient presents with: ${query.trim()}` }
@@ -181,47 +181,171 @@ app.get('/api/youtube', (req, res) => {
 })
 
 // ─────────────────────────────────────────────────────────────────────────────
-// GET /api/images?q=disease+name — Wikipedia (free, no key)
+// GET /api/images?q=disease+name
+// Fetches up to 3 clinical ocular photos via Wikimedia Commons + Wikipedia
+// Uses quoted compound searches + strict allow/block filtering
 // ─────────────────────────────────────────────────────────────────────────────
-app.get('/api/images', (req, res) => {
+app.get('/api/images', async (req, res) => {
   const query = req.query.q
   if (!query) return res.status(400).json({ error: 'Query required' })
 
-  const searchQuery = encodeURIComponent(query.replace(/\s+/g, '_'))
-  const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${searchQuery}`
+  const queryLower = query.toLowerCase().replace(/[^a-z0-9 ]/g, '')
 
-  https.get(url, { headers: { 'User-Agent': 'PathNema/1.0 (educational)' } }, (wRes) => {
-    let data = ''
-    wRes.on('data', chunk => { data += chunk })
-    wRes.on('end', () => {
-      try {
-        const parsed = JSON.parse(data)
-        const images = []
+  // Title MUST match at least one allow term (ocular anatomy / clinical photo indicators)
+  const ALLOW = [
+    queryLower,
+    'eye', 'ocul', 'ophthalm', 'retina', 'cornea', 'iris', 'pupil',
+    'vitreous', 'sclera', 'conjunctiv', 'macula', 'fundus', 'optic nerve',
+    'uvea', 'uveitis', 'glaucoma', 'cataract', 'kerato', 'blephar',
+    'eyelid', 'orbit', 'strabismus', 'amblyopia', 'nystagmus', 'choroid',
+    'fovea', 'slit.?lamp', 'fluorescein', 'angiograph', 'leukocoria',
+    'hyphema', 'pterygium', 'trachoma', 'chalazion', 'papilledema',
+    'exophthalm', 'proptosis', 'ectropion', 'entropion', 'ptosis',
+    'photo', 'photograph', 'clinical photo', 'histolog', 'patholog',
+  ]
 
-        if (parsed.originalimage?.source) {
-          images.push({
-            url:     parsed.originalimage.source,
-            title:   parsed.title,
-            source:  'Wikipedia',
-            context: parsed.content_urls?.desktop?.page || '',
-          })
-        } else if (parsed.thumbnail?.source) {
-          images.push({
-            url:     parsed.thumbnail.source.replace(/\/\d+px-/, '/640px-'),
-            title:   parsed.title,
-            source:  'Wikipedia',
-            context: parsed.content_urls?.desktop?.page || '',
-          })
+  // Title matching ANY block term is immediately rejected
+  const BLOCK = [
+    // Non-medical objects
+    'aircraft', 'airplane', 'aeroplane', 'plane', 'jet', 'fighter', 'bomber',
+    'rocket', 'missile', 'tank', 'warship', 'ship', 'boat', 'submarine',
+    'car', 'truck', 'vehicle', 'train', 'motorcycle', 'bicycle',
+    'building', 'architecture', 'bridge', 'tower', 'stadium', 'church',
+    'map', 'flag', 'logo', 'icon', 'symbol', 'badge', 'coat of arms', 'emblem',
+    'portrait', 'landscape', 'mountain', 'river', 'forest', 'beach',
+    'animal', 'bird', 'insect', 'fish', 'plant', 'flower', 'tree', 'food',
+    // Historical illustrations / book scans — NOT clinical photos
+    'woodcut', 'engraving', 'lithograph', 'etching', 'drawing', 'sketch',
+    'painting', 'artwork', 'wellcome', 'atlas and', 'text.?book of',
+    'handbook', 'treatise', 'ediciones', 'mra edicion',
+    'fig\\.', 'figure \\d', 'plate \\d', 'plate\\.',
+    '\\(\\d{4}\\)',   // titles containing a year in parens like (1905)
+  ]
+
+  function isAccepted(title) {
+    const t = title.toLowerCase()
+    if (BLOCK.some(w => new RegExp(w).test(t))) return false
+    return ALLOW.some(w => new RegExp(w).test(t))
+  }
+
+  function httpsGet(url, redirectCount = 0) {
+    return new Promise((resolve, reject) => {
+      if (redirectCount > 5) return reject(new Error('Too many redirects'))
+      https.get(url, { headers: { 'User-Agent': 'PathNema/1.0 (educational; contact@pathnema.com)' } }, (r) => {
+        if ([301, 302, 307, 308].includes(r.statusCode) && r.headers.location) {
+          r.resume()
+          return httpsGet(r.headers.location, redirectCount + 1).then(resolve).catch(reject)
         }
-
-        res.json({ images })
-      } catch (e) {
-        res.status(500).json({ error: 'Failed to fetch Wikipedia image' })
-      }
+        if (r.statusCode !== 200) { r.resume(); return reject(new Error(`HTTP ${r.statusCode}`)) }
+        let data = ''
+        r.on('data', c => { data += c })
+        r.on('end', () => {
+          try { resolve(JSON.parse(data)) }
+          catch (e) { reject(new Error(`JSON parse failed: ${e.message}`)) }
+        })
+      }).on('error', reject)
     })
-  }).on('error', (e) => {
-    res.status(500).json({ error: e.message })
-  })
+  }
+
+  async function resolveCommonsFiles(fileTitles) {
+    if (!fileTitles.length) return []
+    const filtered = fileTitles.filter(t => isAccepted(t))
+    if (!filtered.length) return []
+    const titlesParam = encodeURIComponent(filtered.join('|'))
+    const infoUrl = `https://commons.wikimedia.org/w/api.php?action=query&titles=${titlesParam}&prop=imageinfo&iiprop=url&iiurlwidth=640&format=json&origin=*`
+    const infoData = await httpsGet(infoUrl)
+    const pages = Object.values(infoData?.query?.pages || {})
+    const results = []
+    for (const page of pages) {
+      const info = page.imageinfo?.[0]
+      if (!info?.url) continue
+      if (/\.(svg|gif)$/i.test(info.url)) continue
+      const title = (page.title || query).replace(/^File:/, '').replace(/\.\w+$/, '')
+      if (!isAccepted(title)) continue
+      results.push({
+        url:     info.thumburl || info.url,
+        title,
+        source:  'Wikimedia Commons',
+        context: `https://commons.wikimedia.org/wiki/${encodeURIComponent(page.title || '')}`,
+      })
+    }
+    return results
+  }
+
+  async function searchCommons(term, limit = 20) {
+    const url = `https://commons.wikimedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(term)}&srnamespace=6&srlimit=${limit}&format=json&origin=*`
+    const data = await httpsGet(url)
+    return (data?.query?.search || [])
+      .map(r => r.title)
+      .filter(t => /\.(jpg|jpeg|png|webp)$/i.test(t))
+  }
+
+  try {
+    const images = []
+
+    // ── Pass 1: Quoted compound searches — most precise, least noise ──
+    // Wikimedia full-text search with quoted phrases strongly narrows results
+    const compoundTerms = [
+      `"${query}" eye`,
+      `"${query}" fundus`,
+      `"${query}" slit lamp`,
+      `"${query}" ocular`,
+      `"${query}" ophthalmology`,
+      `"${query}" clinical`,
+    ]
+    for (const term of compoundTerms) {
+      if (images.length >= 3) break
+      try {
+        const titles   = await searchCommons(term, 20)
+        const resolved = await resolveCommonsFiles(titles)
+        for (const img of resolved) {
+          if (images.length >= 3) break
+          if (!images.find(x => x.url === img.url)) images.push(img)
+        }
+      } catch (e) { console.warn(`Pass 1 "${term}" failed:`, e.message) }
+    }
+
+    // ── Pass 2: Plain disease name, rely entirely on isAccepted filter ──
+    if (images.length < 3) {
+      try {
+        const titles   = await searchCommons(query, 20)
+        const resolved = await resolveCommonsFiles(titles)
+        for (const img of resolved) {
+          if (images.length >= 3) break
+          if (!images.find(x => x.url === img.url)) images.push(img)
+        }
+      } catch (e) { console.warn('Pass 2 failed:', e.message) }
+    }
+
+    // ── Pass 3: Wikipedia article image — only if article is clearly medical ──
+    if (images.length < 3) {
+      try {
+        const wikiSlug = encodeURIComponent(query.replace(/\s+/g, '_'))
+        const wikiData = await httpsGet(`https://en.wikipedia.org/api/rest_v1/page/summary/${wikiSlug}`)
+        const desc = (wikiData.description || wikiData.extract || '').toLowerCase()
+        const isMedical = /eye|ocul|ophthalm|retina|cornea|lens|vision|visual|medical|disease|disorder|condition|syndrome/.test(desc)
+        if (isMedical) {
+          const imgSrc = wikiData.originalimage?.source || wikiData.thumbnail?.source
+          if (imgSrc && isAccepted(wikiData.title || query)) {
+            const bigUrl = imgSrc.replace(/\/\d+px-/, '/640px-')
+            if (!images.find(x => x.url === bigUrl)) {
+              images.push({
+                url:     bigUrl,
+                title:   wikiData.title || query,
+                source:  'Wikipedia',
+                context: wikiData.content_urls?.desktop?.page || '',
+              })
+            }
+          }
+        }
+      } catch (_) { /* silent */ }
+    }
+
+    res.json({ images })
+  } catch (err) {
+    console.error('Images fetch error:', err.message)
+    res.status(500).json({ error: 'Failed to fetch images' })
+  }
 })
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -231,7 +355,7 @@ app.get('/api/health', (req, res) => {
   const { KHURANA_KNOWLEDGE } = require('./khuranaKnowledge')
   res.json({
     status:        'ok',
-    model:         'meta-llama/llama-4-scout-17b-16e-instruct',
+    model:         'openai/gpt-oss-120b',
     provider:      'Groq',
     knowledgeBase: KHURANA_KNOWLEDGE.source,
     totalDiseases: KHURANA_KNOWLEDGE.sections.length,
@@ -263,7 +387,7 @@ const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   const { KHURANA_KNOWLEDGE } = require('./khuranaKnowledge')
   console.log(`\n🚀 Path-Nema backend running on http://localhost:${PORT}`)
-  console.log(`🤖 Model: meta-llama/llama-4-scout-17b-16e-instruct (Groq)`)
+  console.log(`🤖 Model: openai/gpt-oss-120b (Groq)`)
   console.log(`📚 Knowledge base: ${KHURANA_KNOWLEDGE.source}`)
   console.log(`🔬 Diseases loaded: ${KHURANA_KNOWLEDGE.sections.length}`)
   console.log(`🎥 YouTube API: ${process.env.YOUTUBE_API_KEY ? '✅ configured' : '❌ missing'}`)

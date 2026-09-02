@@ -2,7 +2,6 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useEffect, useState }      from 'react'
 import { addDiseaseToHistory }      from './DashboardPage'
 import jsPDF                        from 'jspdf'
-import { getDiseaseImages }         from '../utils/diseaseImages'
 import {
   CheckCircle, Microscope, Stethoscope, FlaskConical,
   AlertTriangle, AlertCircle, Zap, FileText, Video,
@@ -66,19 +65,23 @@ const handleDDxClick = async (diseaseName) => {
   useEffect(() => {
     if (!disease) return
     setImagesLoading(true)
-    const localImages = getDiseaseImages(disease.name)
-    if (localImages.length > 0) {
-      setImages(localImages)
-      setImagesLoading(false)
-    } else {
-      fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/images?q=${encodeURIComponent(disease.name)}`)
-        .then(r => r.json())
-        .then(data => {
-          if (data.images && data.images.length > 0) setImages(data.images)
-          setImagesLoading(false)
-        })
-        .catch(() => setImagesLoading(false))
-    }
+    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/images?q=${encodeURIComponent(disease.name)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.images && data.images.length > 0) {
+          // Resolve each image URL — use direct URL for Wikimedia (open CORS),
+          // proxy everything else to avoid mixed-content / CORS issues
+          const resolved = data.images.map(img => ({
+            ...img,
+            src: (img.url.startsWith('/') || img.url.includes('wikimedia.org') || img.url.includes('wikipedia.org'))
+              ? img.url
+              : `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/proxy-image?url=${encodeURIComponent(img.url)}`,
+          }))
+          setImages(resolved)
+        }
+        setImagesLoading(false)
+      })
+      .catch(() => setImagesLoading(false))
   }, [disease?.name])
 
   if (!disease) {
@@ -229,7 +232,9 @@ const handleDDxClick = async (diseaseName) => {
             <X size={28} strokeWidth={1.5} />
           </button>
           <div className="max-w-3xl w-full" onClick={e => e.stopPropagation()}>
-            <img src={lightbox.url} alt={lightbox.title}
+            <img
+              src={lightbox.src || (lightbox.url.startsWith('/') ? lightbox.url : `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/proxy-image?url=${encodeURIComponent(lightbox.url)}`)}
+              alt={lightbox.title}
               className="w-full rounded-2xl object-contain max-h-[75vh]"
               onError={e => { e.target.src = 'https://placehold.co/800x500/0f2318/2effc0?text=Image+Unavailable' }} />
             <div className="mt-3 px-1">
@@ -287,20 +292,20 @@ const handleDDxClick = async (diseaseName) => {
             <span className="font-body text-[10px] text-[#4a7a64] uppercase tracking-wider">Click to enlarge</span>
           </div>
           {imagesLoading ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {[1,2,3,4].map(i => <div key={i} className="h-[140px] rounded-xl bg-[#0f2318] border border-[#1a3328] animate-pulse" />)}
+            <div className="grid grid-cols-3 gap-3">
+              {[1,2,3].map(i => <div key={i} className="h-[160px] rounded-xl bg-[#0f2318] border border-[#1a3328] animate-pulse" />)}
             </div>
           ) : images.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {images.map((img, i) => (
                 <div key={i}
                   className="relative group rounded-xl overflow-hidden border border-[#1a3328] bg-[#0f2318] cursor-pointer hover:border-[#1aad82] transition-all duration-200"
-                  style={{ height: 140 }} onClick={() => setLightbox(img)}>
+                  style={{ height: 160 }} onClick={() => setLightbox(img)}>
                   <img
-                    src={img.url.startsWith('/') ? img.url : `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/proxy-image?url=${encodeURIComponent(img.url)}`}
+                    src={img.src}
                     alt={img.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    onError={e => { e.target.closest('.group').style.display = 'none' }}
+                    onError={e => { e.target.src = 'https://placehold.co/400x160/0f2318/2effc0?text=Image+Unavailable' }}
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-200 flex items-center justify-center">
                     <Search size={20} strokeWidth={1.5} className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
@@ -318,7 +323,7 @@ const handleDDxClick = async (diseaseName) => {
           )}
           {images.length > 0 && (
             <p className="font-body text-[10px] text-[#4a7a64] mt-2">
-              Images sourced from the web for educational purposes only. Always verify clinical images with peer-reviewed sources.
+              Images sourced from Google Images for educational purposes only. Always verify clinical images with peer-reviewed sources.
             </p>
           )}
         </div>
