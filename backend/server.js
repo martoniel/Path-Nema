@@ -101,15 +101,36 @@ Respond ONLY with valid JSON — no prose, no markdown, no code fences:
 - Be clinically precise and comprehensive — used by medical professionals
 - Draw primarily from the Khurana reference material provided`
 
-    const completion = await groq.chat.completions.create({
-      model:       'openai/gpt-oss-120b',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user',   content: `Patient presents with: ${query.trim()}` }
-      ],
-      temperature: 0.3,
-      max_tokens:  8000,
-    })
+    // Try models in order — fall back if rate-limited (429)
+    const MODELS = [
+      'qwen/qwen3.8-27b',
+      'openai/gpt-oss-120b',
+      'groq/compound',
+    ]
+    let completion
+    let lastErr
+    for (const model of MODELS) {
+      try {
+        completion = await groq.chat.completions.create({
+          model,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user',   content: `Patient presents with: ${query.trim()}` }
+          ],
+          temperature: 0.3,
+          max_tokens:  8000,
+        })
+        break // success — stop trying
+      } catch (e) {
+        lastErr = e
+        if (e.status === 429 || e.status === 404) {
+          console.warn(`⚠️  Model ${model} failed (${e.status}), trying next...`)
+          continue
+        }
+        throw e // non-rate-limit error — bubble up
+      }
+    }
+    if (!completion) throw lastErr
 
     const rawText   = completion.choices[0]?.message?.content || ''
     const cleanJSON = rawText.replace(/```json\n?/gi, '').replace(/```\n?/gi, '').trim()
@@ -355,7 +376,7 @@ app.get('/api/health', (req, res) => {
   const { KHURANA_KNOWLEDGE } = require('./khuranaKnowledge')
   res.json({
     status:        'ok',
-    model:         'openai/gpt-oss-120b',
+    model:         'qwen/qwen3.8-27b (fallback: gpt-oss-120b, compound)',
     provider:      'Groq',
     knowledgeBase: KHURANA_KNOWLEDGE.source,
     totalDiseases: KHURANA_KNOWLEDGE.sections.length,
@@ -387,7 +408,7 @@ const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   const { KHURANA_KNOWLEDGE } = require('./khuranaKnowledge')
   console.log(`\n🚀 Path-Nema backend running on http://localhost:${PORT}`)
-  console.log(`🤖 Model: openai/gpt-oss-120b (Groq)`)
+  console.log(`🤖 Model: qwen/qwen3.8-27b → gpt-oss-120b → compound (Groq, with fallback)`)
   console.log(`📚 Knowledge base: ${KHURANA_KNOWLEDGE.source}`)
   console.log(`🔬 Diseases loaded: ${KHURANA_KNOWLEDGE.sections.length}`)
   console.log(`🎥 YouTube API: ${process.env.YOUTUBE_API_KEY ? '✅ configured' : '❌ missing'}`)
