@@ -101,33 +101,54 @@ Respond ONLY with valid JSON — no prose, no markdown, no code fences:
 - Be clinically precise and comprehensive — used by medical professionals
 - Draw primarily from the Khurana reference material provided`
 
-    // Try models in order — fall back if rate-limited (429)
+    // Try models in order — retry with backoff on 429, fall back to next model
     const MODELS = [
       'qwen/qwen3.8-27b',
       'openai/gpt-oss-120b',
       'groq/compound',
+      'groq/compound-mini',
     ]
+
+    const sleep = ms => new Promise(r => setTimeout(r, ms))
+
+    async function tryWithRetry(model, retries = 3) {
+      for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+          return await groq.chat.completions.create({
+            model,
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user',   content: `Patient presents with: ${query.trim()}` }
+            ],
+            temperature: 0.3,
+            max_tokens:  8000,
+          })
+        } catch (e) {
+          if (e.status === 429 && attempt < retries) {
+            const wait = attempt * 3000 // 3s, 6s
+            console.warn(`⚠️  ${model} rate-limited (attempt ${attempt}/${retries}), retrying in ${wait/1000}s...`)
+            await sleep(wait)
+            continue
+          }
+          throw e
+        }
+      }
+    }
+
     let completion
     let lastErr
     for (const model of MODELS) {
       try {
-        completion = await groq.chat.completions.create({
-          model,
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user',   content: `Patient presents with: ${query.trim()}` }
-          ],
-          temperature: 0.3,
-          max_tokens:  8000,
-        })
-        break // success — stop trying
+        completion = await tryWithRetry(model)
+        console.log(`✅ Used model: ${model}`)
+        break
       } catch (e) {
         lastErr = e
         if (e.status === 429 || e.status === 404) {
-          console.warn(`⚠️  Model ${model} failed (${e.status}), trying next...`)
+          console.warn(`⚠️  Model ${model} exhausted (${e.status}), trying next...`)
           continue
         }
-        throw e // non-rate-limit error — bubble up
+        throw e
       }
     }
     if (!completion) throw lastErr
@@ -157,8 +178,8 @@ Respond ONLY with valid JSON — no prose, no markdown, no code fences:
     if (err.message?.includes('API_KEY') || err.message?.includes('api_key')) {
       return res.status(401).json({ error: 'Invalid Groq API key.' })
     }
-    if (err.message?.includes('rate') || err.message?.includes('429')) {
-      return res.status(429).json({ error: 'Rate limit reached. Please wait a moment.' })
+    if (err.status === 429 || err.message?.includes('rate') || err.message?.includes('429')) {
+      return res.status(429).json({ error: 'All AI models are currently busy. Please wait 15–20 seconds and try again.' })
     }
     res.status(500).json({ error: 'Something went wrong. Please try again.' })
   }
